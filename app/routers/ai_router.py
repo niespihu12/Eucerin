@@ -27,7 +27,6 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
         print(f"DEBUG: Tamaño de imagen recibida: {len(image_data)} bytes")
         print(f"DEBUG: Tipo de contenido: {file.content_type}")
         
-        # Validar que los datos no estén vacíos
         if not image_data or len(image_data) < 1024:
             return AIResponse(result="Error: Imagen muy pequeña o vacía")
         
@@ -36,7 +35,6 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
         
         content_type = file.content_type or "image/jpeg"
         
-        # Validar base64
         if not base64_image or len(base64_image) < 100:
             return AIResponse(result="Error: Base64 inválido")
         
@@ -64,3 +62,9 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
     except Exception as e:
         print(f"ERROR en put_AI: {str(e)}")
         return AIResponse(result=f"Error: {str(e)}")
+    
+    
+@ai_router.delete('/delete', tags=["AI"])
+async def delete_AI() -> AIResponse:
+    ai_state["result"] = ""
+    return AIResponse(result="")
