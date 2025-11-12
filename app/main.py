@@ -8,8 +8,8 @@ from app.utils.cors import add_cors_middleware
 app = FastAPI()
 
 # Cors Middleware
-add_cors_middleware(app)
 app.add_middleware(HTTPErrorHandler)
+add_cors_middleware(app)
 
 app.include_router(prefix="/api/camara", router=camera_router)
 app.include_router(prefix="/api/ai", router=ai_router)
