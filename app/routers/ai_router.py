@@ -64,7 +64,7 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
         return AIResponse(result=f"Error: {str(e)}")
     
     
-@ai_router.delete('/delete', tags=["AI"])
-async def delete_AI() -> AIResponse:
-    ai_state["result"] = ""
-    return AIResponse(result="")
+# @ai_router.delete('/delete', tags=["AI"])
+# async def delete_AI() -> AIResponse:
+#     ai_state["result"] = ""
+#     return AIResponse(result="")
