@@ -39,7 +39,7 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
                 ],
             }
         ],
-        max_output_tokens=1500
+        max_output_tokens=1000
     )
     result = response.output_text
     ai_state["result"] = result

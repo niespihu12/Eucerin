@@ -15,6 +15,6 @@ async def get_camera() -> CamaraResponse:
 
 
 @camera_router.put("/", tags=["Camara"])
-async def put_camera() -> CamaraResponse:
-    camera_state["camera"] = not camera_state["camera"]
+async def put_camera(data: Camara) -> CamaraResponse:
+    camera_state["camera"] =  data
     return CamaraResponse(camera=camera_state["camera"])
