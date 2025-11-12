@@ -44,6 +44,7 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
     result = response.output_text
     ai_state["result"] = result
 
-@ai_router.delete('/delete')
+@ai_router.delete('/delete', tags=["AI"])
 async def delete_AI() -> AIResponse:
     ai_state["result"] = ""
+    return AIResponse(result="")
