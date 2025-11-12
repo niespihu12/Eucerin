@@ -31,7 +31,7 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
             {
                 "role": "user",
                 "content": [
-                    {"type": "input_text", "text": "Analiza esta imagen y proporciona una descripción detallada de lo que ves."},
+                    {"type": "input_text", "text": "Analiza cuidadosamente la imagen proporcionada y determina de forma precisa las características dermatológicas visibles. Si en la imagen no se evidencia una persona, responde únicamente: “En la imagen no se evidencia una persona.”. Si detectas una persona, analiza su piel y responde estrictamente en este formato, sin agregar texto adicional: Tipo_de_Piel: [Normal | Seca | Mixta | Grasa], Presencia_Manchas_o_Pigmentacion: [SI | NO], Presencia_de_Imperfecciones: [SI | NO], Zona: [Rostro | Cuerpo]. Para determinar el tipo de piel, evalúa brillo, textura, poros y uniformidad; para manchas o pigmentación, identifica zonas oscuras o tono desigual; para imperfecciones, detecta granos, poros inflamados o brotes visibles; y para la zona, define si corresponde al rostro o al cuerpo según la proporción de rasgos humanos presentes. Si no se puede realizar el análisis por baja calidad o falta de claridad, responde exactamente: “No se pudo procesar bien la imagen."},
                     {
                         "type": "input_image",
                         "image_url": f"data:{content_type};base64,{base64_image}",
