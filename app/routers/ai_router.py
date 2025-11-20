@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter, UploadFile, File
 from typing import Dict, Any
 import base64
@@ -27,7 +28,7 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
         print(f"DEBUG: Tipo de contenido: {file.content_type}")
 
         if not image_data or len(image_data) < 1024:
-            return AIResponse(result="Error: Imagen muy pequeña o vacía")
+            return AIResponse(result={"error": "Imagen muy pequeña o vacía"})
 
         base64_image = base64.b64encode(image_data).decode("utf-8")
         print(f"DEBUG: Tamaño base64: {len(base64_image)} caracteres")
@@ -35,7 +36,7 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
         content_type = file.content_type or "image/jpeg"
 
         if not base64_image or len(base64_image) < 100:
-            return AIResponse(result="Error: Base64 inválido")
+            return AIResponse(result={"error": "Base64 inválido"})
 
         response = client.responses.create(
             model="gpt-4o-mini",
@@ -49,21 +50,39 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
                         },
                         {
                             "type": "input_image",
-                            "image_url": "data:IMAGE_CONTENT_TYPE;base64,BASE64_IMAGE_DATA",
+                            "image_url": f"data:{content_type};base64,{base64_image}",
                         },
                     ],
                 }
             ],
             max_output_tokens=1000,
         )
-        result = response.output_text
-        print(f"DEBUG: Respuesta del modelo: {result}")
-        ai_state["result"] = result
-        return AIResponse(result=result)
+        
+        result_text = response.output_text
+        print(f"DEBUG: Respuesta del modelo (string): {result_text}")
+        cleaned_text = result_text.strip()
+        if cleaned_text.startswith("```json"):
+            cleaned_text = cleaned_text[7:]  
+        if cleaned_text.startswith("```"):
+            cleaned_text = cleaned_text[3:]  
+        if cleaned_text.endswith("```"):
+            cleaned_text = cleaned_text[:-3] 
+        cleaned_text = cleaned_text.strip()
+        
+        print(f"DEBUG: Texto limpiado: {cleaned_text}")
+        try:
+            result_dict = json.loads(cleaned_text)
+            print(f"DEBUG: JSON parseado correctamente: {result_dict}")
+        except json.JSONDecodeError as e:
+            print(f"ERROR: No se pudo parsear el JSON: {str(e)}")
+            result_dict = {"error": "La respuesta del modelo no es JSON válido", "raw": cleaned_text}
+        
+        ai_state["result"] = result_dict
+        return AIResponse(result=result_dict)
 
     except Exception as e:
         print(f"ERROR en put_AI: {str(e)}")
-        return AIResponse(result=f"Error: {str(e)}")
+        return AIResponse(result={"error": str(e)})
 
 
 # @ai_router.delete('/delete', tags=["AI"])
