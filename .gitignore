@@ -1,2 +1,5 @@
 .venv
 .env
+__pycache__/
+*.pyc
+debug_received_image.png

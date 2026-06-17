@@ -39,7 +39,17 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
             return AIResponse(result={"error": "Base64 inválido"})
 
         response = client.responses.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
+            instructions=(
+                "Eres un asistente de análisis cosmético de la piel para una marca de "
+                "cuidado facial (skincare). Tu función es evaluar la condición VISIBLE de "
+                "la piel (textura, hidratación, imperfecciones, pigmentación, líneas) con "
+                "fines exclusivamente cosméticos y de recomendación de productos. NO "
+                "identificas, reconoces ni nombras a ninguna persona; solo describes "
+                "características generales de la piel visible. Estas evaluaciones son "
+                "orientativas y no constituyen un diagnóstico médico. Si el rostro es "
+                "visible, SIEMPRE realiza el análisis cosmético solicitado y no te niegues."
+            ),
             input=[
                 {
                     "role": "user",
@@ -51,7 +61,7 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
 
                                 REGLAS GENERALES 
                                 1. Si en la imagen no se evidencia una persona, responde exactamente: "En la imagen no se evidencia una persona." 
-                                2. Si la imagen es de una persona pero NO es posible analizar su piel con claridad por baja resolución, iluminación insuficiente, desenfoque o calidad deficiente, responde exactamente: "No se pudo procesar bien la imagen." 
+                                2. Usa la respuesta "No se pudo procesar bien la imagen." ÚNICAMENTE cuando el rostro sea totalmente irreconocible (imagen casi negra, completamente borrosa, vacía o sin rostro alguno). Si el rostro es visible aunque la calidad no sea perfecta, DEBES realizar el análisis cosmético igualmente y NO debes negarte ni excusarte.
                                 3. Si la imagen muestra el cuerpo sin un rostro claramente visible, responde exactamente: "La imagen no corresponde a un rostro humano identificable." 
                                 4. Si el rostro está visible, responde únicamente en formato JSON, sin agregar texto fuera del JSON y sin explicaciones adicionales. 
 
@@ -159,6 +169,7 @@ async def put_AI(file: UploadFile = File(...)) -> AIResponse:
                         {
                             "type": "input_image",
                             "image_url": f"data:{content_type};base64,{base64_image}",
+                            "detail": "high",
                         },
                     ],
                 }
